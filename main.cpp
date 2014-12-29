@@ -1,13 +1,14 @@
 #include <iostream>
-#include <cstdio>
+#include <fstream>
 
 int main() {
   std::cout << "Hello world!" << std::endl;
-  FILE* inputFile = fopen("graph.json", "r");
-  if (inputFile != NULL) {
-    std::cout << "File open successfull" << std::endl;
-    fclose(inputFile);
+  std::ifstream inputFileStream("graph.json", std::ifstream::in);
+  char c;
+  while(inputFileStream.get(c)) {
+    std::cout << c;
   }
+  inputFileStream.close();
   return 0;
 }
 
