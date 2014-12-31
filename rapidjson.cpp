@@ -18,6 +18,10 @@ int main() {
 
   std::cout << d.IsArray() << std::endl;
 
+  for (SizeType i = 0; i < d.Size(); ++i) {
+    std::cout << d[i]["from"].GetInt() << std::endl;
+  }
+
   return 0;
 }
 
