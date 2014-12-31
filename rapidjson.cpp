@@ -1,23 +1,23 @@
 #include "rapidjson/document.h"
-#include "rapidjson/writer.h"
-#include "rapidjson/stringbuffer.h"
+#include "rapidjson/filereadstream.h"
 #include <iostream>
+#include <fstream>
 
 using namespace rapidjson;
 
 int main() {
-  const char* json = "{\"project\":\"rapidjson\",\"stars\":10}";
+  char* inputBuffer = new char[2048];
+  FILE* inputFile = fopen("graph.json", "r");
+  FileReadStream inputFileStream(inputFile, inputBuffer, 2048);
+
   Document d;
-  d.Parse(json);
+  d.ParseStream(inputFileStream);
 
-  Value& s = d["stars"];
-  s.SetInt(s.GetInt() + 1);
+  fclose(inputFile);
+  delete inputBuffer;
 
-  StringBuffer buffer;
-  Writer<StringBuffer> writer(buffer);
-  d.Accept(writer);
+  std::cout << d.IsArray() << std::endl;
 
-  std::cout << buffer.GetString() << std::endl;
   return 0;
 }
 
