@@ -19,7 +19,7 @@ class ElementComparison
 {
 public:
   bool operator() (const Element& left, const Element& right) const {
-    return (left.priority < right.priority);
+    return (left.priority > right.priority);
   }
 };
 
