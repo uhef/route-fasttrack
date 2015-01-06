@@ -1,6 +1,7 @@
 #include <iostream>
 #include <queue>
 #include <string>
+#include <unordered_map>
 
 class Element {
 public:
@@ -24,6 +25,10 @@ public:
 };
 
 int main() {
+  std::unordered_map<std::string, std::string> unorderedMap;
+  unorderedMap.insert(std::make_pair<std::string, std::string>("foo", "lol"));
+  std::cout << "Hello unordered map: " << unorderedMap["foo"] << std::endl;
+
   std::cout << "Hello priority queue!" << std::endl;
   Element e("foobar", 10);
   std::cout << e.toString() << std::endl;
