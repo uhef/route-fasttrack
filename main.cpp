@@ -10,6 +10,7 @@ class Weight {
 public:
   int node;
   int weight;
+  int neighborCount;
 
   Weight(int n, int w) {
     node = n;
@@ -35,11 +36,17 @@ int main() {
     int source = d[i]["from"].GetInt();
     int target = d[i]["to"].GetInt();
     int weight = d[i]["weight"].GetInt();
-    weights.emplace(source, Weight(target, weight));
+    try {
+      Weight& element = weights.at(source);
+      element.neighborCount++;
+    }
+    catch(std::out_of_range& e) {
+      weights.emplace(source, Weight(target, weight));
+    }
   }
-  std::cout << "Node 0 leads to " << weights.at(0).node << " by weight " << weights.at(0).weight << std::endl;
-  std::cout << "Node 1 leads to " << weights.at(1).node << " by weight " << weights.at(1).weight << std::endl;
-  std::cout << "Node 2 leads to " << weights.at(2).node << " by weight " << weights.at(2).weight << std::endl;
+  std::cout << "Node 0 leads to " << weights.at(0).node << " by weight " << weights.at(0).weight << " neighbor count: " << weights.at(0).neighborCount << std::endl;
+  std::cout << "Node 1 leads to " << weights.at(1).node << " by weight " << weights.at(1).weight << " neighbor count: " << weights.at(1).neighborCount << std::endl;
+  std::cout << "Node 2 leads to " << weights.at(2).node << " by weight " << weights.at(2).weight << " neighbor count: " << weights.at(2).neighborCount << std::endl;
 
   return 0;
 }
