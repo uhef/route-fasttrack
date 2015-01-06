@@ -1,2 +1,2 @@
 #! /bin/sh
-g++ priority.cpp -std=c++11 -o prio
+g++ main.cpp -std=c++11 -o route
