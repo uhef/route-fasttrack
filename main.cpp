@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <unordered_map>
+#include <forward_list>
 
 using namespace rapidjson;
 
@@ -11,12 +12,21 @@ public:
   int node;
   int weight;
   int neighborCount;
+  std::forward_list<int> neighbors;
 
-  Weight(int n, int w) {
+  Weight(int n, int w, int neighbor) {
     node = n;
     weight = w;
+    neighborCount = 0;
+    neighbors.push_front(neighbor);
   }
 };
+
+void logNode(const std::unordered_map<int, Weight> weights, int index) {
+  std::cout << "Node " << index << " leads to " << weights.at(index).node
+	    << " by weight " << weights.at(index).weight
+	    << " neighbor count: " << weights.at(index).neighborCount << std::endl;
+}
 
 int main() {
   char* inputBuffer = new char[2048];
@@ -39,14 +49,15 @@ int main() {
     try {
       Weight& element = weights.at(source);
       element.neighborCount++;
+      element.neighbors.push_front(target);
     }
     catch(std::out_of_range& e) {
-      weights.emplace(source, Weight(target, weight));
+      weights.emplace(source, Weight(target, weight, target));
     }
   }
-  std::cout << "Node 0 leads to " << weights.at(0).node << " by weight " << weights.at(0).weight << " neighbor count: " << weights.at(0).neighborCount << std::endl;
-  std::cout << "Node 1 leads to " << weights.at(1).node << " by weight " << weights.at(1).weight << " neighbor count: " << weights.at(1).neighborCount << std::endl;
-  std::cout << "Node 2 leads to " << weights.at(2).node << " by weight " << weights.at(2).weight << " neighbor count: " << weights.at(2).neighborCount << std::endl;
+  logNode(weights, 0);
+  logNode(weights, 1);
+  logNode(weights, 2);
 
   return 0;
 }
