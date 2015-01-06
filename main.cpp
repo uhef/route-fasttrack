@@ -23,9 +23,14 @@ public:
 };
 
 void logNode(const std::unordered_map<int, Weight> weights, int index) {
-  std::cout << "Node " << index << " leads to " << weights.at(index).node
-	    << " by weight " << weights.at(index).weight
-	    << " neighbor count: " << weights.at(index).neighborCount << std::endl;
+  const Weight& w = weights.at(index);
+  std::cout << "Node " << index << " leads to " << w.node
+	    << " by weight " << w.weight
+	    << " neighbor count: " << w.neighborCount << std::endl;
+  std::cout << "\tNeighbors are:" << std::endl;
+  for (int neighbor : w.neighbors) {
+    std::cout << "\t" << neighbor << std::endl;
+  }
 }
 
 int main() {
