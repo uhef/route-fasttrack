@@ -4,6 +4,7 @@
 #include <fstream>
 #include <unordered_map>
 #include <forward_list>
+#include <queue>
 
 using namespace rapidjson;
 
@@ -19,6 +20,24 @@ public:
     weight = w;
     neighborCount = 0;
     neighbors.push_front(neighbor);
+  }
+};
+
+class Node {
+public:
+  int id;
+  int f_value;
+  Node(int node, int f) {
+    id = node;
+    f_value = f;
+  }
+};
+
+class NodeComparison
+{
+public:
+  bool operator() (const Node& left, const Node& right) const {
+    return (left.f_value > right.f_value);
   }
 };
 
@@ -49,6 +68,14 @@ Document readJSON(const std::string& fileName) {
 
 void calculateRoute(int start, int goal, const std::unordered_map<int, Weight>& weights) {
   std::cout << "Calculating route between " << start << " and " << goal << std::endl;
+  std::priority_queue<Node, std::vector<Node>, NodeComparison> fringe;
+  fringe.push(Node(1, 3));
+  fringe.push(Node(2, 6));
+  fringe.push(Node(3, 1));
+  while(!fringe.empty()) {
+    std::cout << "Next element: " << fringe.top().id << std::endl;
+    fringe.pop();
+  }
 }
 
 int main() {
