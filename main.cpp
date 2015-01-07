@@ -33,9 +33,9 @@ void logNode(const std::unordered_map<int, Weight> weights, int index) {
   }
 }
 
-int main() {
+Document readJSON(const std::string& fileName) {
   char* inputBuffer = new char[2048];
-  FILE* inputFile = fopen("graph.json", "r");
+  FILE* inputFile = fopen(fileName.c_str(), "r");
   FileReadStream inputFileStream(inputFile, inputBuffer, 2048);
 
   Document d;
@@ -43,6 +43,12 @@ int main() {
 
   fclose(inputFile);
   delete inputBuffer;
+
+  return d;
+}
+
+int main() {
+  Document d = readJSON("graph.json");
 
   std::cout << d.IsArray() << std::endl;
 
