@@ -48,15 +48,15 @@ Document readJSON(const std::string& fileName) {
 }
 
 int main() {
-  Document d = readJSON("graph.json");
+  Document graphDocument = readJSON("graph.json");
 
-  std::cout << d.IsArray() << std::endl;
+  std::cout << graphDocument.IsArray() << std::endl;
 
   std::unordered_map<int, Weight> weights;
-  for (SizeType i = 0; i < d.Size(); ++i) {
-    int source = d[i]["from"].GetInt();
-    int target = d[i]["to"].GetInt();
-    int weight = d[i]["weight"].GetInt();
+  for (SizeType i = 0; i < graphDocument.Size(); ++i) {
+    int source = graphDocument[i]["from"].GetInt();
+    int target = graphDocument[i]["to"].GetInt();
+    int weight = graphDocument[i]["weight"].GetInt();
     try {
       Weight& element = weights.at(source);
       element.neighborCount++;
