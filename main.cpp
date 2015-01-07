@@ -12,9 +12,9 @@ public:
   int node;
   int weight;
   int neighborCount;
-  std::forward_list<int> neighbors;
+  std::forward_list<std::pair<int, int>> neighbors;
 
-  Weight(int n, int w, int neighbor) {
+  Weight(int n, int w, std::pair<int, int> neighbor) {
     node = n;
     weight = w;
     neighborCount = 0;
@@ -28,8 +28,8 @@ void logNode(const std::unordered_map<int, Weight> weights, int index) {
 	    << " by weight " << w.weight
 	    << " neighbor count: " << w.neighborCount << std::endl;
   std::cout << "\tNeighbors are:" << std::endl;
-  for (int neighbor : w.neighbors) {
-    std::cout << "\t" << neighbor << std::endl;
+  for (std::pair<int, int> neighbor : w.neighbors) {
+    std::cout << "\tNode: " << neighbor.first << " weight: " << neighbor.second << std::endl;
   }
 }
 
@@ -54,10 +54,10 @@ int main() {
     try {
       Weight& element = weights.at(source);
       element.neighborCount++;
-      element.neighbors.push_front(target);
+      element.neighbors.push_front(std::make_pair(target, weight));
     }
     catch(std::out_of_range& e) {
-      weights.emplace(source, Weight(target, weight, target));
+      weights.emplace(source, Weight(target, weight, std::make_pair(target, weight)));
     }
   }
   logNode(weights, 0);
