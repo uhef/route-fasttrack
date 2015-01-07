@@ -69,9 +69,7 @@ Document readJSON(const std::string& fileName) {
 void calculateRoute(int start, int goal, const std::unordered_map<int, Weight>& weights) {
   std::cout << "Calculating route between " << start << " and " << goal << std::endl;
   std::priority_queue<Node, std::vector<Node>, NodeComparison> fringe;
-  fringe.push(Node(1, 3));
-  fringe.push(Node(2, 6));
-  fringe.push(Node(3, 1));
+  fringe.push(Node(start, 0));
   while(!fringe.empty()) {
     std::cout << "Next element: " << fringe.top().id << std::endl;
     fringe.pop();
