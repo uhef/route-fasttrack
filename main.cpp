@@ -49,8 +49,10 @@ Document readJSON(const std::string& fileName) {
 
 int main() {
   Document graphDocument = readJSON("graph.json");
+  Document journeysDocument = readJSON("journeys.json");
 
   std::cout << graphDocument.IsArray() << std::endl;
+  std::cout << journeysDocument.IsArray() << std::endl;
 
   std::unordered_map<int, Weight> weights;
   for (SizeType i = 0; i < graphDocument.Size(); ++i) {
