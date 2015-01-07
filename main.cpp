@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <forward_list>
 #include <queue>
+#include <climits>
 
 using namespace rapidjson;
 
@@ -66,14 +67,51 @@ Document readJSON(const std::string& fileName) {
   return d;
 }
 
+int heuristic(const std::unordered_map<int, Weight>& weights, int id) {
+  if(!weights.count(id) || weights.at(id).neighbors.empty()) return INT_MAX;
+  const Weight& weight = weights.at(id);
+  std::forward_list<std::pair<int, int>>::const_iterator it = weight.neighbors.begin();
+  int smallest_distance = (*it).second;
+  while(++it != weight.neighbors.end()) {
+    if((*it).second < smallest_distance) {
+      smallest_distance = (*it).second;
+    }
+  }
+  return smallest_distance;
+}
+
 void calculateRoute(int start, int goal, const std::unordered_map<int, Weight>& weights) {
   std::cout << "Calculating route between " << start << " and " << goal << std::endl;
+  std::unordered_map<int, int> came_from;
+  std::unordered_map<int, int> g_value;
   std::priority_queue<Node, std::vector<Node>, NodeComparison> fringe;
   fringe.push(Node(start, 0));
+  came_from[start] = start;
+  g_value[start] = 0;
+
   while(!fringe.empty()) {
-    std::cout << "Next element: " << fringe.top().id << std::endl;
+    const Node& current = fringe.top();
+    std::cout << " " << current.id;
     fringe.pop();
+    if(current.id == goal) {
+      std::cout << "Found solution!" << std::endl;
+      return;
+    }
+
+    if(weights.count(current.id) && !weights.at(current.id).neighbors.empty()) {
+      const Weight& weight = weights.at(current.id);
+      for(std::pair<int, int> neighbor : weight.neighbors) {
+        int tentative_g = g_value[current.id] + neighbor.second;
+        if(!g_value.count(neighbor.first) || tentative_g < g_value[neighbor.first]) {
+          g_value[neighbor.first] = tentative_g;
+          int priority = tentative_g + heuristic(weights, neighbor.first);
+          fringe.push(Node(neighbor.first, priority));
+          came_from[neighbor.first] = current.id;
+        }
+      }
+    }
   }
+  std::cout << "Didn't find solution :(" << std::endl;
 }
 
 int main() {
@@ -97,9 +135,6 @@ int main() {
       weights.emplace(source, Weight(target, weight, std::make_pair(target, weight)));
     }
   }
-  logNode(weights, 0);
-  logNode(weights, 1);
-  logNode(weights, 2);
 
   for (SizeType i = 0; i < journeysDocument.Size(); ++i) {
     int start = journeysDocument[i]["from"].GetInt();
