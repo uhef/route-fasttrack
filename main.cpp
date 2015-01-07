@@ -54,6 +54,14 @@ int main() {
   std::cout << graphDocument.IsArray() << std::endl;
   std::cout << journeysDocument.IsArray() << std::endl;
 
+  for (SizeType i = 0; i < journeysDocument.Size(); ++i) {
+    int start = journeysDocument[i]["from"].GetInt();
+    int goal = journeysDocument[i]["to"].GetInt();
+    if (!journeysDocument[i].HasMember("route")) {
+      std::cout << "Please calculate route between " << start << " and " << goal << std::endl;
+    }
+  }
+
   std::unordered_map<int, Weight> weights;
   for (SizeType i = 0; i < graphDocument.Size(); ++i) {
     int source = graphDocument[i]["from"].GetInt();
