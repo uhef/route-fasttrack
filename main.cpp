@@ -6,6 +6,7 @@
 #include <forward_list>
 #include <queue>
 #include <climits>
+#include <stack>
 
 using namespace rapidjson;
 
@@ -67,8 +68,11 @@ Document readJSON(const std::string& fileName) {
   return d;
 }
 
-int heuristic(const std::unordered_map<int, Weight>& weights, int id) {
-  if(!weights.count(id) || weights.at(id).neighbors.empty()) return INT_MAX;
+int calculate_priority(const std::unordered_map<int, Weight>& weights, int goal, int id, int g_value) {
+  if(!weights.count(id) || weights.at(id).neighbors.empty()) {
+    if(id == goal) return 0;
+    else return INT_MAX;
+  }
   const Weight& weight = weights.at(id);
   std::forward_list<std::pair<int, int>>::const_iterator it = weight.neighbors.begin();
   int smallest_distance = (*it).second;
@@ -77,10 +81,23 @@ int heuristic(const std::unordered_map<int, Weight>& weights, int id) {
       smallest_distance = (*it).second;
     }
   }
-  return smallest_distance;
+  return g_value + smallest_distance;
 }
 
-void calculateRoute(int start, int goal, const std::unordered_map<int, Weight>& weights) {
+std::stack<int> reconstruct_path(const std::unordered_map<int, int> came_from, int start, int goal) {
+  std::stack<int> route;
+  int current = goal;
+  std::cout << "Pushing following nodes:" << std::endl;
+  while(current != start) {
+    std::cout << " " << current;
+    route.push(current);
+    current = came_from.at(current);
+  }
+  route.push(start);
+  return route;
+}
+
+std::stack<int> calculateRoute(int start, int goal, const std::unordered_map<int, Weight>& weights) {
   std::cout << "Calculating route between " << start << " and " << goal << std::endl;
   std::unordered_map<int, int> came_from;
   std::unordered_map<int, int> g_value;
@@ -91,11 +108,11 @@ void calculateRoute(int start, int goal, const std::unordered_map<int, Weight>& 
 
   while(!fringe.empty()) {
     const Node& current = fringe.top();
-    std::cout << " " << current.id;
+    // std::cout << " " << current.id;
     fringe.pop();
     if(current.id == goal) {
       std::cout << "Found solution!" << std::endl;
-      return;
+      return reconstruct_path(came_from, start, goal);
     }
 
     if(weights.count(current.id) && !weights.at(current.id).neighbors.empty()) {
@@ -104,7 +121,7 @@ void calculateRoute(int start, int goal, const std::unordered_map<int, Weight>& 
         int tentative_g = g_value[current.id] + neighbor.second;
         if(!g_value.count(neighbor.first) || tentative_g < g_value[neighbor.first]) {
           g_value[neighbor.first] = tentative_g;
-          int priority = tentative_g + heuristic(weights, neighbor.first);
+          int priority = calculate_priority(weights, goal, neighbor.first, tentative_g);
           fringe.push(Node(neighbor.first, priority));
           came_from[neighbor.first] = current.id;
         }
@@ -112,6 +129,7 @@ void calculateRoute(int start, int goal, const std::unordered_map<int, Weight>& 
     }
   }
   std::cout << "Didn't find solution :(" << std::endl;
+  return std::stack<int>();
 }
 
 int main() {
