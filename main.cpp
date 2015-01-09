@@ -77,9 +77,7 @@ int calculate_priority(const std::unordered_map<int, Weight>& weights, int goal,
 std::stack<int> reconstruct_path(const std::unordered_map<int, int> came_from, int start, int goal) {
   std::stack<int> route;
   int current = goal;
-  std::cout << "Pushing following nodes:" << std::endl;
   while(current != start) {
-    std::cout << " " << current;
     route.push(current);
     current = came_from.at(current);
   }
@@ -148,7 +146,12 @@ int main() {
     int start = journeysDocument[i]["from"].GetInt();
     int goal = journeysDocument[i]["to"].GetInt();
     if (!journeysDocument[i].HasMember("route")) {
-      calculateRoute(start, goal, weights);
+      std::stack<int> route = calculateRoute(start, goal, weights);
+      std::cout << "Route:" << std::endl;
+      while(!route.empty()) {
+        std::cout << route.top() << std::endl;
+        route.pop();
+      }
     }
   }
 
