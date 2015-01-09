@@ -25,21 +25,11 @@ public:
   }
 };
 
-class Node {
-public:
-  int id;
-  int f_value;
-  Node(int node, int f) {
-    id = node;
-    f_value = f;
-  }
-};
-
 class NodeComparison
 {
 public:
-  bool operator() (const Node& left, const Node& right) const {
-    return (left.f_value > right.f_value);
+  bool operator() (const std::pair<int, int>& left, const std::pair<int, int>& right) const {
+    return (left.second > right.second);
   }
 };
 
@@ -101,29 +91,29 @@ std::stack<int> calculateRoute(int start, int goal, const std::unordered_map<int
   std::cout << "Calculating route between " << start << " and " << goal << std::endl;
   std::unordered_map<int, int> came_from;
   std::unordered_map<int, int> g_value;
-  std::priority_queue<Node, std::vector<Node>, NodeComparison> fringe;
-  fringe.push(Node(start, 0));
+  std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, NodeComparison> fringe;
+  fringe.push(std::make_pair(start, 0));
   came_from[start] = start;
   g_value[start] = 0;
 
   while(!fringe.empty()) {
-    const Node& current = fringe.top();
+    int current_id = fringe.top().first;
     // std::cout << " " << current.id;
     fringe.pop();
-    if(current.id == goal) {
+    if(current_id == goal) {
       std::cout << "Found solution!" << std::endl;
       return reconstruct_path(came_from, start, goal);
     }
 
-    if(weights.count(current.id) && !weights.at(current.id).neighbors.empty()) {
-      const Weight& weight = weights.at(current.id);
+    if(weights.count(current_id) && !weights.at(current_id).neighbors.empty()) {
+      const Weight& weight = weights.at(current_id);
       for(std::pair<int, int> neighbor : weight.neighbors) {
-        int tentative_g = g_value[current.id] + neighbor.second;
+        int tentative_g = g_value[current_id] + neighbor.second;
         if(!g_value.count(neighbor.first) || tentative_g < g_value[neighbor.first]) {
           g_value[neighbor.first] = tentative_g;
           int priority = calculate_priority(weights, goal, neighbor.first, tentative_g);
-          fringe.push(Node(neighbor.first, priority));
-          came_from[neighbor.first] = current.id;
+          fringe.push(std::make_pair(neighbor.first, priority));
+          came_from[neighbor.first] = current_id;
         }
       }
     }
