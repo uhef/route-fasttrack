@@ -1,5 +1,7 @@
 #include "rapidjson/document.h"
 #include "rapidjson/filereadstream.h"
+#include "rapidjson/stringbuffer.h"
+#include "rapidjson/writer.h"
 #include <iostream>
 #include <fstream>
 #include <unordered_map>
@@ -136,7 +138,17 @@ int main() {
       std::cout << route.top() << std::endl;
       route.pop();
     }
+    if(!journeysDocument[i].HasMember("route")) {
+      Value route_array(kArrayType);
+      Document::AllocatorType& allocator = journeysDocument.GetAllocator();
+      journeysDocument[i].AddMember("route", route_array, allocator);
+    }
   }
+
+  StringBuffer buffer;
+  Writer<StringBuffer> writer(buffer);
+  journeysDocument.Accept(writer);
+  std::cout << buffer.GetString() << std::endl;
 
   return 0;
 }
