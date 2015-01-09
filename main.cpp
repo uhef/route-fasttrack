@@ -33,17 +33,6 @@ public:
   }
 };
 
-void logNode(const std::unordered_map<int, Weight> weights, int index) {
-  const Weight& w = weights.at(index);
-  std::cout << "Node " << index << " leads to " << w.node
-	    << " by weight " << w.weight
-	    << " neighbor count: " << w.neighborCount << std::endl;
-  std::cout << "\tNeighbors are:" << std::endl;
-  for (std::pair<int, int> neighbor : w.neighbors) {
-    std::cout << "\tNode: " << neighbor.first << " weight: " << neighbor.second << std::endl;
-  }
-}
-
 Document readJSON(const std::string& fileName) {
   char* inputBuffer = new char[2048];
   FILE* inputFile = fopen(fileName.c_str(), "r");
