@@ -130,13 +130,11 @@ int main() {
   for (SizeType i = 0; i < journeysDocument.Size(); ++i) {
     int start = journeysDocument[i]["from"].GetInt();
     int goal = journeysDocument[i]["to"].GetInt();
-    if (!journeysDocument[i].HasMember("route")) {
-      std::stack<int> route = calculateRoute(start, goal, weights);
-      std::cout << "Route:" << std::endl;
-      while(!route.empty()) {
-        std::cout << route.top() << std::endl;
-        route.pop();
-      }
+    std::stack<int> route = calculateRoute(start, goal, weights);
+    std::cout << "Route:" << std::endl;
+    while(!route.empty()) {
+      std::cout << route.top() << std::endl;
+      route.pop();
     }
   }
 
