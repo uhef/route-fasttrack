@@ -96,7 +96,6 @@ std::stack<int> calculateRoute(int start, int goal, const std::unordered_map<int
 
   while(!fringe.empty()) {
     int current_id = fringe.top().first;
-    // std::cout << " " << current.id;
     fringe.pop();
     if(current_id == goal) {
       std::cout << "Found solution!" << std::endl;
