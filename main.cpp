@@ -12,7 +12,7 @@
 
 using namespace rapidjson;
 
-typedef std::forward_list<std::pair<int, int>> node_neighbors;
+typedef std::forward_list<std::pair<int, int>> Neighbors;
 
 class NodeComparison
 {
@@ -36,15 +36,15 @@ Document readJSON(const std::string& fileName) {
   return d;
 }
 
-int calculate_priority(const std::unordered_map<int, node_neighbors>& weights, int goal, int id, int g_value) {
-  if(!weights.count(id) || weights.at(id).empty()) {
+int calculate_priority(const std::unordered_map<int, Neighbors>& node_neighbors, int goal, int id, int g_value) {
+  if(!node_neighbors.count(id) || node_neighbors.at(id).empty()) {
     if(id == goal) return 0;
     else return INT_MAX;
   }
-  const node_neighbors& weight = weights.at(id);
-  std::forward_list<std::pair<int, int>>::const_iterator it = weight.begin();
+  const Neighbors& neighbors = node_neighbors.at(id);
+  std::forward_list<std::pair<int, int>>::const_iterator it = neighbors.begin();
   int smallest_distance = (*it).second;
-  while(++it != weight.end()) {
+  while(++it != neighbors.end()) {
     if((*it).second < smallest_distance) {
       smallest_distance = (*it).second;
     }
@@ -63,7 +63,7 @@ std::stack<int> reconstruct_path(const std::unordered_map<int, int> came_from, i
   return route;
 }
 
-std::stack<int> calculateRoute(int start, int goal, const std::unordered_map<int, node_neighbors>& weights) {
+std::stack<int> calculateRoute(int start, int goal, const std::unordered_map<int, Neighbors>& node_neighbors) {
   std::unordered_map<int, int> came_from;
   std::unordered_map<int, int> g_value;
   std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, NodeComparison> fringe;
@@ -78,13 +78,13 @@ std::stack<int> calculateRoute(int start, int goal, const std::unordered_map<int
       return reconstruct_path(came_from, start, goal);
     }
 
-    if(weights.count(current_id) && !weights.at(current_id).empty()) {
-      const node_neighbors& weight = weights.at(current_id);
-      for(std::pair<int, int> neighbor : weight) {
+    if(node_neighbors.count(current_id) && !node_neighbors.at(current_id).empty()) {
+      const Neighbors& neighbors = node_neighbors.at(current_id);
+      for(std::pair<int, int> neighbor : neighbors) {
         int tentative_g = g_value[current_id] + neighbor.second;
         if(!g_value.count(neighbor.first) || tentative_g < g_value[neighbor.first]) {
           g_value[neighbor.first] = tentative_g;
-          int priority = calculate_priority(weights, goal, neighbor.first, tentative_g);
+          int priority = calculate_priority(node_neighbors, goal, neighbor.first, tentative_g);
           fringe.push(std::make_pair(neighbor.first, priority));
           came_from[neighbor.first] = current_id;
         }
@@ -98,19 +98,19 @@ int main() {
   Document graph_document = readJSON("graph.json");
   Document journeys_document = readJSON("journeys.json");
 
-  std::unordered_map<int, node_neighbors> weights;
+  std::unordered_map<int, Neighbors> node_neighbors;
   for (SizeType i = 0; i < graph_document.Size(); ++i) {
     int source = graph_document[i]["from"].GetInt();
     int target = graph_document[i]["to"].GetInt();
     int weight = graph_document[i]["weight"].GetInt();
-    if(weights.count(source)) {
-      node_neighbors& element = weights.at(source);
-      element.push_front(std::make_pair(target, weight));
+    if(node_neighbors.count(source)) {
+      Neighbors& neighbors = node_neighbors.at(source);
+      neighbors.push_front(std::make_pair(target, weight));
     }
     else {
-      node_neighbors neighbors;
+      Neighbors neighbors;
       neighbors.push_front(std::make_pair(target, weight));
-      weights[source] = neighbors;
+      node_neighbors[source] = neighbors;
     }
   }
 
@@ -125,7 +125,7 @@ int main() {
     }
     journeys_document[i]["route"].Clear();
 
-    std::stack<int> route = calculateRoute(start, goal, weights);
+    std::stack<int> route = calculateRoute(start, goal, node_neighbors);
     Value& route_array = journeys_document[i]["route"];
     while(!route.empty()) {
       Value route_node(kNumberType);
