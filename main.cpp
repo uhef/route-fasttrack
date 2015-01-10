@@ -16,13 +16,11 @@ class Weight {
 public:
   int node;
   int weight;
-  int neighborCount;
   std::forward_list<std::pair<int, int>> neighbors;
 
   Weight(int n, int w, std::pair<int, int> neighbor) {
     node = n;
     weight = w;
-    neighborCount = 0;
     neighbors.push_front(neighbor);
   }
 };
@@ -118,7 +116,6 @@ int main() {
     int weight = graphDocument[i]["weight"].GetInt();
     try {
       Weight& element = weights.at(source);
-      element.neighborCount++;
       element.neighbors.push_front(std::make_pair(target, weight));
     }
     catch(std::out_of_range& e) {
