@@ -12,14 +12,7 @@
 
 using namespace rapidjson;
 
-class Weight {
-public:
-  std::forward_list<std::pair<int, int>> neighbors;
-
-  Weight(std::pair<int, int> neighbor) {
-    neighbors.push_front(neighbor);
-  }
-};
+typedef std::forward_list<std::pair<int, int>> node_neighbors;
 
 class NodeComparison
 {
@@ -43,15 +36,15 @@ Document readJSON(const std::string& fileName) {
   return d;
 }
 
-int calculate_priority(const std::unordered_map<int, Weight>& weights, int goal, int id, int g_value) {
-  if(!weights.count(id) || weights.at(id).neighbors.empty()) {
+int calculate_priority(const std::unordered_map<int, node_neighbors>& weights, int goal, int id, int g_value) {
+  if(!weights.count(id) || weights.at(id).empty()) {
     if(id == goal) return 0;
     else return INT_MAX;
   }
-  const Weight& weight = weights.at(id);
-  std::forward_list<std::pair<int, int>>::const_iterator it = weight.neighbors.begin();
+  const node_neighbors& weight = weights.at(id);
+  std::forward_list<std::pair<int, int>>::const_iterator it = weight.begin();
   int smallest_distance = (*it).second;
-  while(++it != weight.neighbors.end()) {
+  while(++it != weight.end()) {
     if((*it).second < smallest_distance) {
       smallest_distance = (*it).second;
     }
@@ -70,7 +63,7 @@ std::stack<int> reconstruct_path(const std::unordered_map<int, int> came_from, i
   return route;
 }
 
-std::stack<int> calculateRoute(int start, int goal, const std::unordered_map<int, Weight>& weights) {
+std::stack<int> calculateRoute(int start, int goal, const std::unordered_map<int, node_neighbors>& weights) {
   std::unordered_map<int, int> came_from;
   std::unordered_map<int, int> g_value;
   std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, NodeComparison> fringe;
@@ -85,9 +78,9 @@ std::stack<int> calculateRoute(int start, int goal, const std::unordered_map<int
       return reconstruct_path(came_from, start, goal);
     }
 
-    if(weights.count(current_id) && !weights.at(current_id).neighbors.empty()) {
-      const Weight& weight = weights.at(current_id);
-      for(std::pair<int, int> neighbor : weight.neighbors) {
+    if(weights.count(current_id) && !weights.at(current_id).empty()) {
+      const node_neighbors& weight = weights.at(current_id);
+      for(std::pair<int, int> neighbor : weight) {
         int tentative_g = g_value[current_id] + neighbor.second;
         if(!g_value.count(neighbor.first) || tentative_g < g_value[neighbor.first]) {
           g_value[neighbor.first] = tentative_g;
@@ -105,17 +98,19 @@ int main() {
   Document graph_document = readJSON("graph.json");
   Document journeys_document = readJSON("journeys.json");
 
-  std::unordered_map<int, Weight> weights;
+  std::unordered_map<int, node_neighbors> weights;
   for (SizeType i = 0; i < graph_document.Size(); ++i) {
     int source = graph_document[i]["from"].GetInt();
     int target = graph_document[i]["to"].GetInt();
     int weight = graph_document[i]["weight"].GetInt();
-    try {
-      Weight& element = weights.at(source);
-      element.neighbors.push_front(std::make_pair(target, weight));
+    if(weights.count(source)) {
+      node_neighbors& element = weights.at(source);
+      element.push_front(std::make_pair(target, weight));
     }
-    catch(std::out_of_range& e) {
-      weights.emplace(source, Weight(std::make_pair(target, weight)));
+    else {
+      node_neighbors neighbors;
+      neighbors.push_front(std::make_pair(target, weight));
+      weights[source] = neighbors;
     }
   }
 
