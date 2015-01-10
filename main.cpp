@@ -77,7 +77,6 @@ std::stack<int> reconstruct_path(const std::unordered_map<int, int> came_from, i
 }
 
 std::stack<int> calculateRoute(int start, int goal, const std::unordered_map<int, Weight>& weights) {
-  std::cout << "Calculating route between " << start << " and " << goal << std::endl;
   std::unordered_map<int, int> came_from;
   std::unordered_map<int, int> g_value;
   std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, NodeComparison> fringe;
@@ -89,7 +88,6 @@ std::stack<int> calculateRoute(int start, int goal, const std::unordered_map<int
     int current_id = fringe.top().first;
     fringe.pop();
     if(current_id == goal) {
-      std::cout << "Found solution!" << std::endl;
       return reconstruct_path(came_from, start, goal);
     }
 
@@ -106,7 +104,6 @@ std::stack<int> calculateRoute(int start, int goal, const std::unordered_map<int
       }
     }
   }
-  std::cout << "Didn't find solution :(" << std::endl;
   return std::stack<int>();
 }
 
