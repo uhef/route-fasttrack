@@ -14,13 +14,9 @@ using namespace rapidjson;
 
 class Weight {
 public:
-  int node;
-  int weight;
   std::forward_list<std::pair<int, int>> neighbors;
 
-  Weight(int n, int w, std::pair<int, int> neighbor) {
-    node = n;
-    weight = w;
+  Weight(std::pair<int, int> neighbor) {
     neighbors.push_front(neighbor);
   }
 };
@@ -119,7 +115,7 @@ int main() {
       element.neighbors.push_front(std::make_pair(target, weight));
     }
     catch(std::out_of_range& e) {
-      weights.emplace(source, Weight(target, weight, std::make_pair(target, weight)));
+      weights.emplace(source, Weight(std::make_pair(target, weight)));
     }
   }
 
