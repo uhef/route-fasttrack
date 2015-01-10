@@ -22,7 +22,7 @@ public:
   }
 };
 
-Document readJSON(const std::string& fileName) {
+Document read_json(const std::string& fileName) {
   char* inputBuffer = new char[2048];
   FILE* inputFile = fopen(fileName.c_str(), "r");
   FileReadStream inputFileStream(inputFile, inputBuffer, 2048);
@@ -95,8 +95,8 @@ std::stack<int> calculateRoute(int start, int goal, const std::unordered_map<int
 }
 
 int main() {
-  Document graph_document = readJSON("graph.json");
-  Document journeys_document = readJSON("journeys.json");
+  Document graph_document = read_json("graph.json");
+  Document journeys_document = read_json("journeys.json");
 
   std::unordered_map<int, Neighbors> node_neighbors;
   for (SizeType i = 0; i < graph_document.Size(); ++i) {
