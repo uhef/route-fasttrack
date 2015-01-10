@@ -143,6 +143,7 @@ int main() {
       Document::AllocatorType& allocator = journeysDocument.GetAllocator();
       journeysDocument[i].AddMember("route", route_array, allocator);
     }
+    journeysDocument[i]["route"].Clear();
   }
 
   StringBuffer buffer;
