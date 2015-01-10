@@ -134,23 +134,20 @@ int main() {
     int goal = journeysDocument[i]["to"].GetInt();
     Document::AllocatorType& allocator = journeysDocument.GetAllocator();
 
-    std::stack<int> route = calculateRoute(start, goal, weights);
-    std::cout << "Route:" << std::endl;
-    while(!route.empty()) {
-      std::cout << route.top() << std::endl;
-      route.pop();
-    }
-
     if(!journeysDocument[i].HasMember("route")) {
       Value route_array(kArrayType);
       journeysDocument[i].AddMember("route", route_array, allocator);
     }
     journeysDocument[i]["route"].Clear();
 
-    Value int_value(kNumberType);
-    int_value.SetInt(5);
+    std::stack<int> route = calculateRoute(start, goal, weights);
     Value& route_array = journeysDocument[i]["route"];
-    route_array.PushBack(int_value, allocator);
+    while(!route.empty()) {
+      Value route_node(kNumberType);
+      route_node.SetInt(route.top());
+      route_array.PushBack(route_node, allocator);
+      route.pop();
+    }
   }
 
   StringBuffer buffer;
