@@ -106,14 +106,14 @@ std::stack<int> calculateRoute(int start, int goal, const std::unordered_map<int
 }
 
 int main() {
-  Document graphDocument = readJSON("graph.json");
-  Document journeysDocument = readJSON("journeys.json");
+  Document graph_document = readJSON("graph.json");
+  Document journeys_document = readJSON("journeys.json");
 
   std::unordered_map<int, Weight> weights;
-  for (SizeType i = 0; i < graphDocument.Size(); ++i) {
-    int source = graphDocument[i]["from"].GetInt();
-    int target = graphDocument[i]["to"].GetInt();
-    int weight = graphDocument[i]["weight"].GetInt();
+  for (SizeType i = 0; i < graph_document.Size(); ++i) {
+    int source = graph_document[i]["from"].GetInt();
+    int target = graph_document[i]["to"].GetInt();
+    int weight = graph_document[i]["weight"].GetInt();
     try {
       Weight& element = weights.at(source);
       element.neighbors.push_front(std::make_pair(target, weight));
@@ -123,19 +123,19 @@ int main() {
     }
   }
 
-  for (SizeType i = 0; i < journeysDocument.Size(); ++i) {
-    int start = journeysDocument[i]["from"].GetInt();
-    int goal = journeysDocument[i]["to"].GetInt();
-    Document::AllocatorType& allocator = journeysDocument.GetAllocator();
+  for (SizeType i = 0; i < journeys_document.Size(); ++i) {
+    int start = journeys_document[i]["from"].GetInt();
+    int goal = journeys_document[i]["to"].GetInt();
+    Document::AllocatorType& allocator = journeys_document.GetAllocator();
 
-    if(!journeysDocument[i].HasMember("route")) {
+    if(!journeys_document[i].HasMember("route")) {
       Value route_array(kArrayType);
-      journeysDocument[i].AddMember("route", route_array, allocator);
+      journeys_document[i].AddMember("route", route_array, allocator);
     }
-    journeysDocument[i]["route"].Clear();
+    journeys_document[i]["route"].Clear();
 
     std::stack<int> route = calculateRoute(start, goal, weights);
-    Value& route_array = journeysDocument[i]["route"];
+    Value& route_array = journeys_document[i]["route"];
     while(!route.empty()) {
       Value route_node(kNumberType);
       route_node.SetInt(route.top());
@@ -146,7 +146,7 @@ int main() {
 
   StringBuffer buffer;
   Writer<StringBuffer> writer(buffer);
-  journeysDocument.Accept(writer);
+  journeys_document.Accept(writer);
   std::cout << buffer.GetString() << std::endl;
 
   return 0;
