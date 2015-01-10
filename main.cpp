@@ -22,18 +22,18 @@ public:
   }
 };
 
-Document read_json(const std::string& fileName) {
-  char* inputBuffer = new char[2048];
-  FILE* inputFile = fopen(fileName.c_str(), "r");
-  FileReadStream inputFileStream(inputFile, inputBuffer, 2048);
+Document read_json(const std::string& file_name) {
+  char* input_buffer = new char[2048];
+  FILE* input_file = fopen(file_name.c_str(), "r");
+  FileReadStream input_stream(input_file, input_buffer, 2048);
 
-  Document d;
-  d.ParseStream(inputFileStream);
+  Document document;
+  document.ParseStream(input_stream);
 
-  fclose(inputFile);
-  delete inputBuffer;
+  fclose(input_file);
+  delete input_buffer;
 
-  return d;
+  return document;
 }
 
 int calculate_priority(const std::unordered_map<int, Neighbors>& node_neighbors, int goal, int id, int g_value) {
@@ -63,7 +63,7 @@ std::stack<int> reconstruct_path(const std::unordered_map<int, int> came_from, i
   return route;
 }
 
-std::stack<int> calculateRoute(int start, int goal, const std::unordered_map<int, Neighbors>& node_neighbors) {
+std::stack<int> calculate_route(int start, int goal, const std::unordered_map<int, Neighbors>& node_neighbors) {
   std::unordered_map<int, int> came_from;
   std::unordered_map<int, int> g_value;
   std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, NodeComparison> fringe;
@@ -125,7 +125,7 @@ int main() {
     }
     journeys_document[i]["route"].Clear();
 
-    std::stack<int> route = calculateRoute(start, goal, node_neighbors);
+    std::stack<int> route = calculate_route(start, goal, node_neighbors);
     Value& route_array = journeys_document[i]["route"];
     while(!route.empty()) {
       Value route_node(kNumberType);
