@@ -4,6 +4,8 @@ Shortest route calculation on C++11. Done as a solution to fast track challenge:
 
 Uses [rapidjson](https://github.com/miloyip/rapidjson) for JSON serialization and deserialization.
 
-Uses C++11. Compiles at least on G++ 4.8.2
+Uses C++11. Tested on G++ 4.8.2
 
-Problem doesn't benefit too much from usage of A\* since for instance geometric distance between node and goal node cannot be calculated, but I wanted to try it out nevertheless. Heuristic is simply the shortest distance from node to any neighboring node unless if node has no neighbors (in which case the heuristic is 0 for goal node and MAX\_INT for any other node).
+Although the problem is not an exemplary use case for A\* I wanted to try it out. A\* would perform better given a more efficient heuristic (like geometric distance between node and goal node). Current heuristic is simply the shortest distance from node to any neighboring node unless the node has no neighbors (in which case the heuristic is 0 for goal node and MAX\_INT for any other node).
+
+Algorithm could be improved further by introducing closed set for nodes that have already been traversed.
